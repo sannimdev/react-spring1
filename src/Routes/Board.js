@@ -35,13 +35,20 @@ const TitleType = styled.h1`
 `;
 
 const SearchBoxInner = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 80px;
   background-color: #f0f0f0;
+  & > * + * {
+    margin-left: 20px;
+  }
 `;
 
 const BoardContainer = styled.div`
   & > table {
+    margin-top: 40px;
     width: 100%;
     border-top: 2px solid #343a40;
     border-bottom: 1px solid #343a40;
