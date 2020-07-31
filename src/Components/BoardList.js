@@ -28,12 +28,12 @@ const BoardContainer = styled.div`
   }
 `;
 
-function BoardList({ data }) {
+function BoardList({ data, page }) {
   if (!data) return null;
   const { items, result, current_page, page_count } = data;
   if (!result || result !== "ok" || !items) return null;
   const pages = Pager.paging(current_page, page_count);
-  console.log(pages);
+  // console.log(pages);
   return (
     <BoardContainer>
       <table>
@@ -50,9 +50,9 @@ function BoardList({ data }) {
           {items &&
             items.map((item, idx) => (
               <tr key={item.no}>
-                <td>{idx + 1}</td>
+                <td>{Pager.getPageStartNumber(page) + idx}</td>
                 <td>
-                  <Link to={`/board/${item.no}?page=${current_page}`}>{item.title}</Link>
+                  <Link to={`/board/${item.no}`}>{item.title}</Link>
                 </td>
                 <td>{item.created}</td>
                 <td>{item.views}</td>

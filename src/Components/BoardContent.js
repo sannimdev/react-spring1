@@ -45,6 +45,7 @@ const ContentWrapper = styled.div`
 `;
 function BoardContent({ data }) {
   if (!data) return null;
+  console.log(data);
   const { result, item } = data;
   if (!item || !result || result !== "ok") return <div>게시물 불러오기 실패</div>;
   return (

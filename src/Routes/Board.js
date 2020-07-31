@@ -1,11 +1,10 @@
-import React, { useReducer, useEffect, useState, useRef } from "react";
+import React, { useReducer, useEffect, useRef } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import BoardList from "../Components/BoardList";
 import { withRouter } from "react-router-dom";
 import BoardContent from "../Components/BoardContent";
 import qs from "qs";
-import Pager from "../Pager";
 
 const Wrapper = styled.div`
   padding: 50px 0;
@@ -93,7 +92,8 @@ function Board({ match, location }) {
     params: { command },
   } = match;
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
-  const page = useRef(1);
+  const { page } = query;
+  const savedPage = useRef(1);
   const [state, dispatch] = useReducer(reducer, initialState);
   const fetchData = async (uri) => {
     dispatch({ type: ACTION_LOADING });
@@ -106,17 +106,22 @@ function Board({ match, location }) {
   };
 
   useEffect(() => {
-    if (query && query.page) page.current = query.page;
+    //페이지 파라미터가 넘어오면...
+    if (query && query.page) {
+      // console.log(query.page + "변경");
+      savedPage.current = query.page;
+    }
 
-    console.log("command:", command);
+    // console.log("command:", command, "page=", savedPage.current, ", query.page=", page);
     if (!command) {
       //게시글 목록
-      fetchData(`http://localhost:9090/spring1/board/list?page=${page.current}`);
+      fetchData(`http://localhost:9090/spring1/board/list?page=${savedPage.current}`);
     } else if (!isNaN(command)) {
       //게시글 조회
       fetchData(`http://localhost:9090/spring1/board/${command}`);
     }
-    console.log("useEffect 구문 실행", page);
+    // console.log("useEffect 구문 실행", page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [command, page]);
 
   const { loading, data, error } = state;
@@ -142,8 +147,8 @@ function Board({ match, location }) {
           </SearchBoxInner>
         )}
 
-        {!command && <BoardList data={data} />}
-        {command && !isNaN(command) && <BoardContent data={(data, page)} />}
+        {!command && <BoardList data={data} page={savedPage.current} />}
+        {command && !isNaN(command) && <BoardContent data={data} page={savedPage.current} />}
       </ArticleWrapper>
     </Wrapper>
   );
