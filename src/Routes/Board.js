@@ -3,6 +3,7 @@ import styled from "styled-components";
 import axios from "axios";
 import BoardList from "../Components/BoardList";
 import { withRouter } from "react-router-dom";
+import BoardContent from "../Components/BoardContent";
 
 const Wrapper = styled.div`
   padding: 50px 0;
@@ -11,7 +12,7 @@ const Wrapper = styled.div`
 const ArticleWrapper = styled.div`
   width: 100%;
   & > div {
-    margin: 0 auto;
+    margin: 30px auto;
     max-width: 1280px;
   }
   & + & {
@@ -90,11 +91,10 @@ function Board({ match, location }) {
     params: { command },
   } = match;
   const [state, dispatch] = useReducer(reducer, initialState);
-  const fetchData = async () => {
+  const fetchData = async (uri) => {
     dispatch({ type: ACTION_LOADING });
     try {
-      const response = await axios.get("http://localhost:9090/spring1/board/list");
-      console.log(response);
+      const response = await axios.get(uri);
       dispatch({ type: ACTION_SUCCESS, data: response.data });
     } catch (error) {
       dispatch({ type: ACTION_ERROR, error });
@@ -102,9 +102,16 @@ function Board({ match, location }) {
   };
 
   useEffect(() => {
-    fetchData();
+    console.log("command:", command);
+    if (!command) {
+      //게시글 목록
+      fetchData(`http://localhost:9090/spring1/board/list`);
+    } else if (!isNaN(command)) {
+      //게시글 조회
+      fetchData(`http://localhost:9090/spring1/board/${command}`);
+    }
     console.log("실행");
-  }, []);
+  }, [command]);
 
   const { loading, data, error } = state;
   if (loading) return "로딩 중";
@@ -116,19 +123,21 @@ function Board({ match, location }) {
         <TitleType>게시판</TitleType>
       </ArticleWrapper>
       <ArticleWrapper>
-        <SearchBoxInner>
-          <select>
-            <option defaultValue="titlecontent">제목+내용</option>
-            <option value="title">제목</option>
-            <option value="content">내용</option>
-            <option value="nickname">작성자</option>
-          </select>
-          <input type="text" />
-          <button type="submit">검색</button>
-        </SearchBoxInner>
+        {(!command || isNaN(command)) && (
+          <SearchBoxInner>
+            <select>
+              <option defaultValue="titlecontent">제목+내용</option>
+              <option value="title">제목</option>
+              <option value="content">내용</option>
+              <option value="nickname">작성자</option>
+            </select>
+            <input type="text" />
+            <button type="submit">검색</button>
+          </SearchBoxInner>
+        )}
 
         {!command && <BoardList data={data} />}
-        {command && !isNaN(command) && <div>게시글</div>}
+        {command && !isNaN(command) && <BoardContent data={data} />}
       </ArticleWrapper>
     </Wrapper>
   );

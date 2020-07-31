@@ -1,15 +1,17 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import Constant from "../Constant";
+
+const palette = Constant.palette;
 
 const BoardContainer = styled.div`
   & > table {
-    margin-top: 40px;
     width: 100%;
-    border-top: 2px solid #343a40;
-    border-bottom: 1px solid #343a40;
+    border-top: 2px solid ${palette.darkGray};
+    border-bottom: 1px solid ${palette.darkGray};
     & thead tr {
-      border-bottom: 1px solid #e0e0e0;
+      border-bottom: 1px solid ${palette.lightGray};
       height: 70px;
       font-weight: 600;
       line-height: 70px;
