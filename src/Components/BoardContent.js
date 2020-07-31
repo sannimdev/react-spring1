@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Constant from "../Constant";
+import { Link } from "react-router-dom";
 
 const palette = Constant.palette;
 
@@ -47,17 +48,20 @@ function BoardContent({ data }) {
   const { result, item } = data;
   if (!item || !result || result !== "ok") return <div>게시물 불러오기 실패</div>;
   return (
-    <ContentWrapper>
-      <TitleBox>
-        <h2>{item.title}</h2>
-        <ul>
-          <li>작성일: {item.created}</li>
-          {item.updated !== item.created && <li>수정일: {item.updated}</li>}
-          <li>작성자: {item.nickname}</li>
-        </ul>
-      </TitleBox>
-      <ContentBox>{item.content}</ContentBox>
-    </ContentWrapper>
+    <>
+      <ContentWrapper>
+        <TitleBox>
+          <h2>{item.title}</h2>
+          <ul>
+            <li>작성일: {item.created}</li>
+            {item.updated !== item.created && <li>수정일: {item.updated}</li>}
+            <li>작성자: {item.nickname}</li>
+          </ul>
+        </TitleBox>
+        <ContentBox>{item.content}</ContentBox>
+      </ContentWrapper>
+      <Link to="/board">목록</Link>
+    </>
   );
 }
 

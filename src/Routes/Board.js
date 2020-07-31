@@ -1,9 +1,11 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import BoardList from "../Components/BoardList";
 import { withRouter } from "react-router-dom";
 import BoardContent from "../Components/BoardContent";
+import qs from "qs";
+import Pager from "../Pager";
 
 const Wrapper = styled.div`
   padding: 50px 0;
@@ -90,6 +92,8 @@ function Board({ match, location }) {
   const {
     params: { command },
   } = match;
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+  const page = useRef(1);
   const [state, dispatch] = useReducer(reducer, initialState);
   const fetchData = async (uri) => {
     dispatch({ type: ACTION_LOADING });
@@ -102,16 +106,18 @@ function Board({ match, location }) {
   };
 
   useEffect(() => {
+    if (query && query.page) page.current = query.page;
+
     console.log("command:", command);
     if (!command) {
       //게시글 목록
-      fetchData(`http://localhost:9090/spring1/board/list`);
+      fetchData(`http://localhost:9090/spring1/board/list?page=${page.current}`);
     } else if (!isNaN(command)) {
       //게시글 조회
       fetchData(`http://localhost:9090/spring1/board/${command}`);
     }
-    console.log("실행");
-  }, [command]);
+    console.log("useEffect 구문 실행", page);
+  }, [command, page]);
 
   const { loading, data, error } = state;
   if (loading) return "로딩 중";
@@ -137,7 +143,7 @@ function Board({ match, location }) {
         )}
 
         {!command && <BoardList data={data} />}
-        {command && !isNaN(command) && <BoardContent data={data} />}
+        {command && !isNaN(command) && <BoardContent data={(data, page)} />}
       </ArticleWrapper>
     </Wrapper>
   );

@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import Constant from "../Constant";
+import Pager from "../Pager";
 
 const palette = Constant.palette;
 
@@ -28,6 +29,11 @@ const BoardContainer = styled.div`
 `;
 
 function BoardList({ data }) {
+  if (!data) return null;
+  const { items, result, current_page, page_count } = data;
+  if (!result || result !== "ok" || !items) return null;
+  const pages = Pager.paging(current_page, page_count);
+  console.log(pages);
   return (
     <BoardContainer>
       <table>
@@ -41,13 +47,12 @@ function BoardList({ data }) {
           </tr>
         </thead>
         <tbody>
-          {data &&
-            data.items &&
-            data.items.map((item, idx) => (
+          {items &&
+            items.map((item, idx) => (
               <tr key={item.no}>
                 <td>{idx + 1}</td>
                 <td>
-                  <Link to={`/board/${item.no}`}>{item.title}</Link>
+                  <Link to={`/board/${item.no}?page=${current_page}`}>{item.title}</Link>
                 </td>
                 <td>{item.created}</td>
                 <td>{item.views}</td>
@@ -56,6 +61,17 @@ function BoardList({ data }) {
             ))}
         </tbody>
       </table>
+      <div>
+        {pages && (
+          <ul>
+            {pages.map((p) => (
+              <li key={p} style={{ display: "inline-block" }}>
+                <Link to={`/board?page=${p}`}>{p}&nbsp;</Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </BoardContainer>
   );
 }
