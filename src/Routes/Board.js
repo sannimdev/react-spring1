@@ -1,6 +1,8 @@
 import React, { useReducer, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import BoardList from "../Components/BoardList";
+import { withRouter } from "react-router-dom";
 
 const Wrapper = styled.div`
   padding: 50px 0;
@@ -47,28 +49,6 @@ const SearchBoxInner = styled.div`
   }
 `;
 
-const BoardContainer = styled.div`
-  & > table {
-    margin-top: 40px;
-    width: 100%;
-    border-top: 2px solid #343a40;
-    border-bottom: 1px solid #343a40;
-    & thead tr {
-      border-bottom: 1px solid #e0e0e0;
-      height: 70px;
-      font-weight: 600;
-      line-height: 70px;
-    }
-    & tbody tr {
-      height: 50px;
-      line-height: 50px;
-      border-bottom: 1px solid #e0e0e0;
-      &:hover {
-        background-color: #f8f9fa;
-      }
-    }
-  }
-`;
 /////TODO: 리듀서 나중에 모듈로 빼 내기
 const ACTION_LOADING = "LOADING";
 const ACTION_SUCCESS = "SUCCESS";
@@ -105,7 +85,10 @@ const initialState = {
   error: null,
 };
 
-function Board() {
+function Board({ match, location }) {
+  const {
+    params: { command },
+  } = match;
   const [state, dispatch] = useReducer(reducer, initialState);
   const fetchData = async () => {
     dispatch({ type: ACTION_LOADING });
@@ -143,35 +126,12 @@ function Board() {
           <input type="text" />
           <button type="submit">검색</button>
         </SearchBoxInner>
-        <BoardContainer>
-          <table>
-            <thead>
-              <tr>
-                <th>번호</th>
-                <th>제목</th>
-                <th>작성일</th>
-                <th>조회수</th>
-                <th>작성자</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data &&
-                data.items &&
-                data.items.map((item, idx) => (
-                  <tr key={item.no}>
-                    <td>{idx + 1}</td>
-                    <td>{item.title}</td>
-                    <td>{item.created}</td>
-                    <td>{item.views}</td>
-                    <td>{item.nickname}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </BoardContainer>
+
+        {!command && <BoardList data={data} />}
+        {command && !isNaN(command) && <div>게시글</div>}
       </ArticleWrapper>
     </Wrapper>
   );
 }
 
-export default Board;
+export default withRouter(Board);
