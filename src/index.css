@@ -1,5 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;700;900&display=swap");
 
+html,
+body {
+  min-width: 1280px;
+}
+
 body,
 * {
   margin: 0;
