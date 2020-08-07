@@ -14,6 +14,7 @@ function App() {
         <Route path="/board" component={Board} exact />
         <Route path="/board/:command" component={Board} />
         <Route path="/member" component={Member} exact />
+        <Route path="/member/login" component={Member} exact />
       </Switch>
     </div>
   );
