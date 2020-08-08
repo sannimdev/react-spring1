@@ -1,6 +1,7 @@
-import React, { useReducer, useState, useEffect } from "react";
+import React, { useReducer, useState, useContext } from "react";
 import styled from "styled-components";
 import LoginInput from "../Components/LoginInput";
+import { MemberContext } from "../App";
 
 //useReducer 복습
 const ACTION_LOADING = "LOADING";
@@ -62,9 +63,16 @@ function Member() {
   const [pw, setPw] = useState("");
 
   const [state, dispatch] = useReducer(reducer, initialState);
-
+  const memberContext = useContext(MemberContext);
   const onClick = (e) => {
     e.preventDefault();
+    memberContext.setInfo({
+      logined: true,
+      nickname: "데모길동",
+      memberId: "test",
+      memberNo: -1,
+      lastLogin: new Date(),
+    });
   };
 
   return (

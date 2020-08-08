@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { MemberContext } from "../App";
 
 const borderColor = "#dee2e6";
 const headerHeight = "80px";
@@ -45,6 +46,14 @@ const HeaderInner = styled.div`
 `;
 
 function Header() {
+  const memberContext = useContext(MemberContext);
+  const doLogout = () => {
+    if (memberContext && memberContext.setInfo) {
+      memberContext.setInfo({
+        logined: false,
+      });
+    }
+  };
   return (
     <HeaderWrapper>
       <HeaderInner>
@@ -55,11 +64,18 @@ function Header() {
           <li>
             <Link to="/board">게시판</Link>
           </li>
-          <li>
-            <Link to="/member/login">로그인</Link>
-          </li>
-          <li>홍길동님</li>
-          <li>로그아웃</li>
+          {!memberContext ||
+            (!memberContext.info.logined && (
+              <li>
+                <Link to="/member/login">로그인</Link>
+              </li>
+            ))}
+          {memberContext && memberContext.info && memberContext.info.nickname && (
+            <li>{memberContext.info.nickname}님</li>
+          )}
+          {memberContext.info && memberContext.info.logined && (
+            <li onClick={() => doLogout()}>로그아웃</li>
+          )}
         </Gnb>
       </HeaderInner>
     </HeaderWrapper>
