@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import axios from "axios";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { MemberContext } from "../App";
@@ -49,6 +50,7 @@ function Header() {
   const [memberInfo, setMemberInfo] = useContext(MemberContext);
   const doLogout = () => {
     if (setMemberInfo) {
+      axios.get("http://localhost:9090/spring1/member/logout");
       setMemberInfo({
         logined: false,
       });
