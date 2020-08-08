@@ -1,10 +1,11 @@
-import React, { useReducer, useEffect, useRef } from "react";
+import React, { useReducer, useEffect, useRef, useContext } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import BoardList from "../Components/BoardList";
 import { withRouter } from "react-router-dom";
 import BoardContent from "../Components/BoardContent";
 import qs from "qs";
+import { MemberContext } from "../App";
 
 const Wrapper = styled.div`
   padding: 50px 0;
@@ -95,6 +96,7 @@ function Board({ match, location }) {
   const { page } = query;
   const savedPage = useRef(1);
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [memberInfo, setMemberInfo] = useContext(MemberContext);
   const fetchData = async (uri) => {
     dispatch({ type: ACTION_LOADING });
     try {
@@ -107,6 +109,8 @@ function Board({ match, location }) {
 
   useEffect(() => {
     //페이지 파라미터가 넘어오면...
+    console.log(memberInfo);
+
     if (query && query.page) {
       // console.log(query.page + "변경");
       savedPage.current = query.page;

@@ -1,4 +1,5 @@
 import React, { useReducer, useState, useContext } from "react";
+import axios from "axios";
 import styled from "styled-components";
 import LoginInput from "../Components/LoginInput";
 import { MemberContext } from "../App";
@@ -63,24 +64,48 @@ function Member({ history }) {
   const [pw, setPw] = useState("");
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const memberContext = useContext(MemberContext);
-  const onClick = (e) => {
-    e.preventDefault();
-    memberContext.setInfo({
-      logined: true,
-      nickname: "데모길동",
-      memberId: "test",
-      memberNo: -1,
-      lastLogin: new Date(),
-    });
-    console.log(history);
-    history.push("/board");
+  const [memberInfo, setMemberInfo] = useContext(MemberContext);
+
+  const fetchLogin = async () => {
+    dispatch({ type: ACTION_LOADING });
+    try {
+      const response = await axios.post("http://localhost:9090/spring1/member/login", {
+        memberId: "test",
+        password: "test",
+      });
+      dispatch({ type: ACTION_SUCCESS, data: response.data });
+      return response.data;
+    } catch (error) {
+      dispatch({ type: ACTION_ERROR, error });
+    }
   };
+
+  const onClick = async (e) => {
+    e.preventDefault();
+    const result = await fetchLogin();
+    //로그인 성공
+    if (result.login && result.login === "success") {
+      console.log(result, "결과");
+      setMemberInfo({
+        logined: true,
+        nickname: result.member.nickname,
+        memberId: result.member.memberId,
+        memberNo: result.member.memberNo,
+        lastLogin: result.member.lastLogin,
+      });
+      history.push("/board");
+    }
+  };
+
+  const { loading, data, error } = state;
+  if (loading) return "로그인 중...";
+  if (error) return "로그인 도중 오류가 발생했습니다. " + error;
 
   return (
     <Wrapper>
       <h1>회원 로그인</h1>
       <div>
+        {data && data.login && data.login === "failure" && <p>로그인에 실패하였습니다.</p>}
         <form>
           <LoginInput
             value={id}

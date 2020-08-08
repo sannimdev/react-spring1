@@ -46,10 +46,10 @@ const HeaderInner = styled.div`
 `;
 
 function Header() {
-  const memberContext = useContext(MemberContext);
+  const [memberInfo, setMemberInfo] = useContext(MemberContext);
   const doLogout = () => {
-    if (memberContext && memberContext.setInfo) {
-      memberContext.setInfo({
+    if (setMemberInfo) {
+      setMemberInfo({
         logined: false,
       });
     }
@@ -64,18 +64,13 @@ function Header() {
           <li>
             <Link to="/board">게시판</Link>
           </li>
-          {!memberContext ||
-            (!memberContext.info.logined && (
-              <li>
-                <Link to="/member/login">로그인</Link>
-              </li>
-            ))}
-          {memberContext && memberContext.info && memberContext.info.nickname && (
-            <li>{memberContext.info.nickname}님</li>
+          {!memberInfo.logined && (
+            <li>
+              <Link to="/member/login">로그인</Link>
+            </li>
           )}
-          {memberContext.info && memberContext.info.logined && (
-            <li onClick={() => doLogout()}>로그아웃</li>
-          )}
+          {memberInfo.nickname && <li>{memberInfo.nickname}님</li>}
+          {memberInfo && memberInfo.logined && <li onClick={() => doLogout()}>로그아웃</li>}
         </Gnb>
       </HeaderInner>
     </HeaderWrapper>

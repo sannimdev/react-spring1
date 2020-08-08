@@ -8,7 +8,7 @@ import Member from "./Routes/Member";
 
 export const MemberContext = createContext(null);
 function App() {
-  const [info, setInfo] = useState({
+  const [memberInfo, setMemberInfo] = useState({
     logined: false,
     memberNo: null,
     memberId: null,
@@ -17,7 +17,7 @@ function App() {
   });
 
   return (
-    <MemberContext.Provider value={{ info, setInfo }}>
+    <MemberContext.Provider value={[memberInfo, setMemberInfo]}>
       <div className="App">
         <Header />
         <Switch>
