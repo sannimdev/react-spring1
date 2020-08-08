@@ -58,7 +58,7 @@ const Wrapper = styled.div`
   }
 `;
 
-function Member() {
+function Member({ history }) {
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
 
@@ -73,6 +73,8 @@ function Member() {
       memberNo: -1,
       lastLogin: new Date(),
     });
+    console.log(history);
+    history.push("/board");
   };
 
   return (
