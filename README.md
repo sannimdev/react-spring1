@@ -1,5 +1,7 @@
 # 리액트 + Restful 스프링 게시판 시행착오 프로젝트
 
+![목업](./docs/assets/screenshot.png)
+
 ## 진행 현황
 
 ### 회원
