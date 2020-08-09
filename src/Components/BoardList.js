@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import Constant from "../Constant";
 import Pager from "../Pager";
+import { MemberContext } from "../App";
 
 const palette = Constant.palette;
 
@@ -28,12 +29,16 @@ const BoardContainer = styled.div`
   }
 `;
 
-function BoardList({ data, page }) {
+function BoardList({ data, page, history }) {
+  const [memberInfo] = useContext(MemberContext);
   if (!data) return null;
   const { items, result, current_page, page_count } = data;
   if (!result || result !== "ok" || !items) return null;
   const pages = Pager.paging(current_page, page_count);
-  // console.log(pages);
+  const onClick = (e) => {
+    history.push("/board/write");
+  };
+
   return (
     <BoardContainer>
       <table>
@@ -72,6 +77,13 @@ function BoardList({ data, page }) {
           </ul>
         )}
       </div>
+      {memberInfo && memberInfo.memberNo && (
+        <div>
+          <button type="button" onClick={(e) => onClick(e)}>
+            글쓰기
+          </button>
+        </div>
+      )}
     </BoardContainer>
   );
 }

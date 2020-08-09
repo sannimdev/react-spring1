@@ -1,11 +1,12 @@
-import React, { useReducer, useEffect, useRef, useContext } from "react";
+import React, { useReducer, useEffect, useRef, useContext, useState } from "react";
 import styled from "styled-components";
+import qs from "qs";
 import axios from "axios";
+import { MemberContext } from "../App";
 import BoardList from "../Components/BoardList";
 import { withRouter } from "react-router-dom";
 import BoardContent from "../Components/BoardContent";
-import qs from "qs";
-import { MemberContext } from "../App";
+import BoardWrite from "../Components/BoardWrite";
 
 const Wrapper = styled.div`
   padding: 50px 0;
@@ -88,7 +89,7 @@ const initialState = {
   error: null,
 };
 
-function Board({ match, location }) {
+function Board({ match, location, history }) {
   const {
     params: { command },
   } = match;
@@ -96,7 +97,7 @@ function Board({ match, location }) {
   const { page } = query;
   const savedPage = useRef(1);
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [memberInfo, setMemberInfo] = useContext(MemberContext);
+  const [memberInfo] = useContext(MemberContext);
   const fetchData = async (uri) => {
     dispatch({ type: ACTION_LOADING });
     try {
@@ -128,17 +129,39 @@ function Board({ match, location }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [command, page]);
 
+  //글쓰기
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  //글쓰기버튼 클릭
+  const submitData = async () => {
+    const body = { title, content };
+    const { data } = await axios.post("http://localhost:9090/spring1/board/write", { ...body });
+    if (data.result && data.result === "ok") {
+      setTitle("");
+      setContent("");
+      history.push("/board");
+    }
+  };
+  const onWrite = (e) => {
+    console.log("글쓰기 버튼 클릭");
+    submitData();
+  };
+  //글쓰기 취소버튼 클릭
+  const onCancel = (e) => {
+    history.push("/board");
+  };
+
   const { loading, data, error } = state;
   if (loading) return "로딩 중";
   if (error) return "오류 " + error;
-
   return (
     <Wrapper>
       <ArticleWrapper>
         <TitleType>게시판</TitleType>
       </ArticleWrapper>
       <ArticleWrapper>
-        {(!command || isNaN(command)) && (
+        {!command && (
           <SearchBoxInner>
             <select>
               <option defaultValue="titlecontent">제목+내용</option>
@@ -151,7 +174,17 @@ function Board({ match, location }) {
           </SearchBoxInner>
         )}
 
-        {!command && <BoardList data={data} page={savedPage.current} />}
+        {!command && <BoardList data={data} page={savedPage.current} history={history} />}
+        {command === "write" && (
+          <BoardWrite
+            onWrite={onWrite}
+            onCancel={onCancel}
+            title={title}
+            setTitle={setTitle}
+            content={content}
+            setContent={setContent}
+          />
+        )}
         {command && !isNaN(command) && <BoardContent data={data} page={savedPage.current} />}
       </ArticleWrapper>
     </Wrapper>

@@ -42,6 +42,10 @@ const ContentWrapper = styled.div`
   ${ContentBox} {
     box-sizing: border-box;
   }
+
+  ${ContentBox} {
+    text-align: left;
+  }
 `;
 function BoardContent({ data }) {
   if (!data) return null;
