@@ -1,68 +1,53 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 리액트 + Restful 스프링 게시판 시행착오 프로젝트
 
-## Available Scripts
+## 진행 현황
 
-In the project directory, you can run:
+### 회원
 
-### `npm start`
+- [x] 로그인
+- [ ] 회원가입
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 게시판
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+- [x] 목록
+- [x] 글 보기
+- [ ] 글 쓰기
+- [ ] 글 수정
+- [ ] 글 삭제
 
-### `npm test`
+## 제작 의도
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- 반복되는 코드를 줄일 수 있지만 줄이지 말고 반복할 것.
+  - API 서버에 요청할 때 useReducer를 이용해 지금의 상태정보(loading상태 등)를 바꾸는 것
+  - 까먹으면 안 된다. 곱씹으면서 지속적으로 사용되는 패턴을 손가락으로라도 익힐 것
 
-### `npm run build`
+## 진행하면서 부딪힌 점
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- 스프링 시큐리티 CSRF 방지 설정 때문에 로그인 연동 시 구현하기 까다롭다😅.
+- 스프링 시큐리티가 아니더라도 기존 방식의 로그인은 구현하기 까다롭다😅.
+  - 백엔드에서 프런트 단까지 처리해줬을 때는 이미 로그인 상태정보(로그인이 됐는지 / 안 됐는지)를 가지고 있다.
+    - 기존 스프링프레임워크에서 뷰엔진을 사용하는 방식
+  - 하지만 프런트 단을 별도의 서버로 분리했을 때는 로그인 상태정보가 최신인지 아닌지 모른다.
+    - 스프링프레임워크 + React 방식
+    - 기존의 방식을 고려한 경우
+      - 아무리 상태관리를 잘한다고 한들 새로고침하면 로그인 상태가 풀림
+      - LocalStorage에 보관한다고 해도 백엔드에서 만료된 세션이라면 유지해주면 안 된다.
+      - 그럼 매번 로그인됐는지 요청해서 여부를 판별하면 안 돼?
+        - 프런트 단으로 분리한 거 자체가 백엔드의 부담을 줄이고자 하는 것도 있는데, 로그인을 매번 요청한다면 나눈 의미가 없지 않을까 싶은데...
+    - 이래서 JWT 토큰이 등장한 거구나... 그리고 토큰 기반 인증과 서버 기반 인증으로 구별이 된 것도 이 때문이고...
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+## 앞으로의 계획과 생각
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    - 이제는 백엔드 서버의 부담을 줄이기 위해서 클라이언트 단에서 처리하는 양이 점점 늘어나겠구나..
+        - 클라이언트 단에서는 json정보를 이용해서 이미 가져 온 파일을 기반으로 리액트가 DOM을 조작하듯이...
+        - 이전까지는 서버에서 세션 정보를 저장하고 있었다면, 이제는 클라이언트가 토큰을 받아서 가지고 있다거나...
+    - 리액트 복습
+    - 로그인/로그아웃의 이슈에 부딪혔지만, 이 이슈는 무시하고 게시판 서비스만 작성
+        - ex: 새로고침해서 상태정보가 날아가 로그인이 풀려도 무시하고 진행
+    - 다음 프로젝트에서는 JWT토큰, redux 상태정보 라이브러리를 이용하여 로그인 서비스 작성
+        - 물론 백엔드에서도 JWT토큰 방식의 로그인을 지원해야 함.
+    - 내가 계획한 대로 설계된 서비스가 없다는 것은 이미 누군가가 시행착오를 겪으며 안 된다는 것을 먼저 알았을 확률이 높다.
 
-### `npm run eject`
+## 참고 사이트
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+- [[JWT/JSON Web Token] 로그인 / 인증에서 Token 사용하기](https://sanghaklee.tistory.com/47)
