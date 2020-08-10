@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import Constant from "../Constant";
 import { Link } from "react-router-dom";
+import { MemberContext } from "../App";
 
 const palette = Constant.palette;
 
@@ -47,9 +48,9 @@ const ContentWrapper = styled.div`
     text-align: left;
   }
 `;
-function BoardContent({ data }) {
+function BoardContent({ data, onDelete }) {
+  const [memberInfo] = useContext(MemberContext);
   if (!data) return null;
-  console.log(data);
   const { result, item } = data;
   if (!item || !result || result !== "ok") return <div>게시물 불러오기 실패</div>;
   return (
@@ -62,6 +63,16 @@ function BoardContent({ data }) {
             {item.updated !== item.created && <li>수정일: {item.updated}</li>}
             <li>작성자: {item.nickname}</li>
           </ul>
+          {memberInfo.memberNo === item.memberNo && (
+            <ul>
+              <li>수정</li>
+              <li>
+                <a href="#" onClick={(e) => onDelete(item.no)}>
+                  삭제
+                </a>
+              </li>
+            </ul>
+          )}
         </TitleBox>
         <ContentBox>{item.content}</ContentBox>
       </ContentWrapper>

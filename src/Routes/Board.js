@@ -95,7 +95,7 @@ function Board({ match, location, history }) {
   } = match;
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
   const { page } = query;
-  const savedPage = useRef(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [state, dispatch] = useReducer(reducer, initialState);
   const [memberInfo] = useContext(MemberContext);
   const fetchData = async (uri) => {
@@ -107,31 +107,40 @@ function Board({ match, location, history }) {
       dispatch({ type: ACTION_ERROR, error });
     }
   };
+  //글쓰기 상태정보
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  useEffect(() => {
+    if (query && page) {
+      // console.log(query.page + "변경");
+      // savedPage.current = query.page;
+      setCurrentPage(page);
+    }
+  }, [page, query]);
 
   useEffect(() => {
     //페이지 파라미터가 넘어오면...
-    console.log(memberInfo);
-
-    if (query && query.page) {
-      // console.log(query.page + "변경");
-      savedPage.current = query.page;
-    }
+    // console.log(memberInfo);
 
     // console.log("command:", command, "page=", savedPage.current, ", query.page=", page);
     if (!command) {
       //게시글 목록
-      fetchData(`http://localhost:9090/spring1/board/list?page=${savedPage.current}`);
+      fetchData(`http://localhost:9090/spring1/board/list?page=${currentPage}`);
     } else if (!isNaN(command)) {
       //게시글 조회
       fetchData(`http://localhost:9090/spring1/board/${command}`);
     }
     // console.log("useEffect 구문 실행", page);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [command, page]);
+  }, [command, currentPage]);
 
-  //글쓰기
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  //글 삭제
+  const onDelete = (boardNo) => {
+    const { data } = axios.delete(`http://localhost:9090/spring1/board/${boardNo}`);
+    history.push("/board");
+    //게시글을 삭제하고 페이지 값에 변화를 주어야 페이지를 새로 렌더링한다.(=> 게시글을 새로 불러온다)
+    setCurrentPage(1);
+  };
 
   //글쓰기버튼 클릭
   const submitData = async () => {
@@ -173,8 +182,7 @@ function Board({ match, location, history }) {
             <button type="submit">검색</button>
           </SearchBoxInner>
         )}
-
-        {!command && <BoardList data={data} page={savedPage.current} history={history} />}
+        {!command && <BoardList data={data} page={currentPage} history={history} />}
         {command === "write" && (
           <BoardWrite
             onWrite={onWrite}
@@ -185,7 +193,9 @@ function Board({ match, location, history }) {
             setContent={setContent}
           />
         )}
-        {command && !isNaN(command) && <BoardContent data={data} page={savedPage.current} />}
+        {command && !isNaN(command) && (
+          <BoardContent data={data} page={currentPage} onDelete={onDelete} />
+        )}
       </ArticleWrapper>
     </Wrapper>
   );
